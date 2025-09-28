@@ -1,1 +1,288 @@
 \chapter{When Models Meet Data}
+\section{The three major components of a ML system: Data, Models, and Learning}
+Question: What do we mean by good models?
+
+\begin{description}
+	\item[Good Model] : should perform well on unseen data. $\Rightarrow$ performance metrics (accuracy or distance frmo ground truth)
+	\item[Machine learning algorithm] : training and prediction
+\end{description}
+
+\subsection{Data as Vectors}
+
+Data is assumed to be tabular. Rows are intances from population, and columns are features. If we have some categorical value, we can convert them into numerical by assining a number to each distinct value. But even for this kind of data, we should consider carefully their units, scaling and constraints. We may  shit and scale all columns of dataset such that they have an empirical mean of  and an empirical variance of 1. \\
+
+\textbf{Notation in this course : } \\
+\begin{description}
+	\item[$\textit{N}$] : denote the number of examples in a dataset
+	\item[$n$ = 1,\dots,$\textit{N}$] : index of each example
+	\item[$x_n$] : row in a dataset as numerical table. nth example out of a total of N examples in the dataset.
+	\item[$d = 1,\dots,\textit{D}$] : Index of each column (feature)
+	\item[Supervised learning] : we have a label or a target or a response variable or an annotation $y_n$ (the salary) associated with each example $x_n$	(the age).
+\end{description}
+
+In this book, it is assumed that : each input $x_n$ is a $D$-dimensional vector of real numbers, which are called \textbf{features, attributes, or covariates.}. We asume that the vector is a column vector in this case.
+
+A dataset is written as a set of example–label pairs
+\[
+\{(x_1, y_1), \ldots, (x_n, y_n), \ldots, (x_N, y_N)\}.
+\]
+The table of examples
+\[
+\{x_1, \ldots, x_N\}
+\]
+is often concatenated, and written as
+\[
+X \in \mathbb{R}^{N \times D}.
+\]
+\textit{Feature map $\Phi$()}: allows us to represent inputs $x_n$ using a higher-dimensional representation  $\Phi(x_n)$. This leads to a \textit{kernel}
+
+\subsection{Models as Functions}
+\textit{Predicator} : a predictive function
+Two approches in the book: a predictor as a function, and a predictor as a probabilistic model
+
+\textbf{Predictor} is a function that, when given a particular input example, produces an output. \[f : \mathbb{R}^D \to \mathbb{R} \tag{8.1}\]
+Where the input vector $x$ is $D$-dimensional (has $D$ features), and the function $f$  return a real number.
+\[
+f(x) = \theta^T x + \theta_0 \tag{8.2}
+\]
+for unkown $\theta$ and $\theta_0$.
+
+\subsection{Models as Probability Distributions}
+Data as a noisy observations where some truth is hidden. We need then to expect that our predictor express some sort of uncertainty. $\Rightarrow$ predictor as probabilistic models,i.e, models describing the distribution of possible functions. $\Rightarrow$ multivariate probability distributions
+
+\subsection{Learning is Finding Parameters}
+
+Goal: find a model and its corresponding parameters to perform well on unseen data. 
+Phases:
+\begin{enumerate} 
+	\item Prediction or inference (for probabilistic model)
+	\item Training or parameter estimation
+	\item Hyperparameter tuning or model selection
+\end{enumerate}
+
+\textbf{Empirical risk minimization}: For the non-probabilistic model, which provides an optimization problem for finding good parameters.
+
+\textbf{Maximum likelihood}: For a statistical model, which is used to find a good set of parameters
+
+We use numerical methods to find good parameters that "fit" the data. 
+
+\textbf{Cross-validation} : Simulate the behavior of our predictor on future unseen data
+
+\textbf{Abduction}: balance between fitting well on training data and finding "simple" explanations of the phenomenon. abduction is the process of inference to the best explanation
+
+\textbf{Hyperparameter} : The choice of the number of components
+\textbf{Model selection} : The problem of choosing different models. \textbf{Nested cross-validation} for non-probabilistic models. 
+
+\textbf{Distinction between parameters and hyperparameters}: consider parameters as the explicit parameters of a probabilistic model, and to consider hyperparameters (higher-level parameters) as parameters that control the distribution of these explicit parameters.
+
+\section{Empirical Risk Minimization} 
+(ERM $\Rightarrow$ for the case of predictor as a function).\\
+\textbf{Learning} means estimating parameters based on training data.
+
+ERM was originally popularize by the proposal of the support vector machine.\\
+Design choices we will cover in subsections.
+
+\subsection{Hypothesis Class of Functions}
+What is the set of functions we allow the predictor to take?
+Consider $\textit{N}$ examples $x_n \in \mathbb{R}^R$, $y_n \in \mathbb{R}$. The dataset : $(x_1, y_1),\dots,(x_N, y_N)$.\\
+Predictor to be estimated: $f(\cdot,\theta): \mathbb{R}^R \to \mathbb{R}$ parametrized by $\theta$.\\
+Find a good parameter $\theta^{*}$ such that :
+\[
+f(x_n,\theta^{*}) \approx y_n \; \text{for all } n = 1, \dots, N \tag{8.3}
+\]
+The ouput of predictor is anoted as $\hat{y}_n = f(x_n, \theta^{*})$\\
+\textbf{Exemple 8.1 (see p.259 of the book)}
+\subsection{Loss Function for Training}
+How do we measure how well the predictor performs on the training data?\\
+$y_n$: current label and $\hat{y}_n$ the prediction based on $x_n$. \\
+loss function  $\ell (y_n,\hat{y}_n)$ : define what it means to fit the data sell. Produces a non-negative number (the loss) representing the error that was made. 
+
+Finding a good parameter vector $\theta^{*}$ $\leftrightarrow$ minimize the average loss on the set of $N$ training examples.
+\textit{Assumption in ML:} dataset is \textit{independent (two data points are not statistically dependent on each other) and indentically distributed}. This leads us the following formula.
+Matrix of training data $X := [x_1,\dots,x_N]^T \in \mathbb{R}^{N \times D}$. A label vector $ y := [y_1,\dots,x_N]^T \in \mathbb{R} ^N$. \\ 
+\textit{Empirical risk} : 
+\[
+R_{\text{emp}}(f,X,y) = \frac{1}{N} \sum_{n=1}^{N} \ell (y_n, \hat{y}_n), \tag{8.6}
+\]
+where $\hat{y}_n = f(x_n, \theta)$.
+$f$ : predictor
+$X$ : data
+$y$: label
+For unseen test data $\rightarrow$ minimizes the \textit{expected risk}
+\begin{equation}
+	R_{\text{true}}(f) = \mathbb{E}_{x,y}\big[ \ell(y, f(x)) \big],
+	\tag{8.10}
+\end{equation}
+Where $y$ is the label and $f(x)$ is the prediction based on the example $x$.
+The notation $R_{\text{true}}(f)$ means that this is the true risk if we had access to an infinite amount of data.\\ \\ \\
+\textbf{Two pratical questions that arises when minimizing expected risk :}
+\begin{itemize}
+	\item How should we change our training procedure to generalize well?
+	\item How do we estimate expected risk from (finite) data?
+\end{itemize}
+\subsection{Regularization to Reduce Overfitting}
+How do we construct predictors from only training data that performs well on unseen test data?\\
+\textit{Test set}: a holded proportion of the whole dataset.
+The performance on test set is unknown because Even knowing only the performance of the predictor on the test set leaks information (Blumand Hardt, 2015).\\
+The subscripts $_{train}$ and $_{test}$ to denote the training and test sets.\\
+\textbf{Overfitting} : the predictor fits too closely to the training data and does not generalize well to new data. If the test risk is much larger than training risk
+$R_{emp} (f, X_{train}, y_{train}) << R_{true} (f)$ \\
+$\Rightarrow$ penalty term or \textit{regularization}: a way to compromise between accurate solution of empirical risk minimization and the size or complexity of the solution. biases the vector $\theta$ to be closer to the origin.
+\textbf{Example 8.3 (Regularized Least Squares)} see p.262
+
+\subsection{Cross-Validation to Assess the Generalization Performance}
+What is the procedure for searching over the space of models?\\
+\textit{Validation set $\mathcal{V}$}: test data. a subset of the available training data that we keep aside.
+ 
+\textit{Cross-validation} 
+\begin{itemize}
+	\item $K$-fold $\rightarrow$ partition the data into $K$ chunks
+	\item $K -1$ for training set $\mathcal{R}$ and the last chunk as the \textit{validation set } $\mathcal{V}$ $\rightarrow$ $\mathcal{D} = \mathcal{R} \cup \mathcal{V} $ such that $\mathcal{R} \cap \mathcal{V} = \emptyset$
+	\item train through $\mathcal{R}$ and test through $\mathcal{V}$
+	\item repeat for $K$ different choices of $\mathcal{V}$ 
+\end{itemize}
+$\Rightarrow$ for each partition $k$ the training data $\mathcal{R}^{(k)}$ produces a predictor $f^{(k)}$ , which is then applied to validation set $\mathcal{V}^{(k)}$ to compute the empirical risk $\mathcal{R}(f^{(k)} , V^{(k)})$. We cycle through all possible partitionings of validation and training sets and compute the average generalization error of the predictor. \\
+Cross-validation approximates the expected generalization error
+\[
+\mathbb{E} [R(f, \mathcal{V})] \approx \frac{1}{K} \sum_{k=1}^{K} \mathcal{R}(f^{(k)} , V^{(k)})
+\]
+Where $\mathcal{R}(f^{(k)} , V^{(k)})$. is the risk on the validation set $\mathcal{V}^{(k)}$ for predictor $f^{(k)}$. \\
+\textbf{Embarrassingly parallel} : little effort is needed to separate the problem into a number of parallel tasks.
+
+\subsection{Further Reading}
+see p.265
+
+\section{Parameter Estimation}
+how to use probability distributions to model our uncertainty due to the observation process and our uncertainty in the parameters of our predictors.
+
+\subsection{Maximum Likelihood Estimation (MLE)}
+To define a function of the parameters that enables us to find a model that fits the data
+well. $\Rightarrow$ \textit{Likelihood function} or its negative logarithm.\\
+\textbf{Negative log-likelihood}: for data represented by a random variable $x$ and for a family of probability densities $p(x|`\theta$ parametrized by $\theta$
+\[
+\mathcal{L}_x (\theta) = - \log p(x|\theta) \tag{8.14}
+\]
+The parameter $\theta$ is varying while the data $x$ is fixed. $\Rightarrow$ $\mathcal{L} (\theta)$ when we consider it as a function of $\theta$.\\
+We can interpret the probability the predictor constructed here as : given a vector $x_n$ we want the probability distribution of the label $y_n$.\\ \\
+$(x_1, y_1),\dots,(x_N,y_N)$ as \textit{independent and identically distributed} $\Rightarrow$ $p(\mathcal{Y} | \mathcal{X}, \theta) = \prod_{n=1}^{N} p(y_n|x_n, \theta) (8.16)$ where $p(y_n| x_n, \theta)$ is a particular distribution, $\mathcal{Y} = \{y_1,\dots, y_N\}$ and $\mathcal{X} = \{x_1,\dots,x_N\}$. \\
+The expression “identically distributed” means that each term in the product (8.16) is of the same distribution, and all of them share the same parameters.\\
+In ML, we often consider the negative log-likelihood:
+\[
+\mathcal{L} (\theta) = - \log p(\mathcal{Y}| \mathcal{X}, \theta) = - \sum_{n=1}^{N} \log p(y_x|x_n, \theta) \tag{8.17}
+\]
+We ought to minimize $\mathcal{L} (\theta)$ with respect to $\theta$. \\
+\textbf{Remark}. The negative sign in (8.17) is a historical artifact that is due to the convention that we want to maximize likelihood, but numerical optimization literature tends to study minimization of functions.\\ \\
+\textbf{Example 8.5} see p.267
+
+\subsection{Maximum A Posteriori Estimation}
+$x$ as data and $\theta$ as the parameter, we got the \textit{posterior} distribution $p(x|\theta)$ from Bayes' theorem:
+\[
+p(\theta | x) = \frac{p(x|\theta) p(\theta)}{p(x)} \tag{8.19}
+\]
+We are interested in finding the parameter $\theta$ that maximizes the posterior. Since $p(x)$ does not depend on $\theta$, we ought to optimize this instead: 
+\[
+p(\theta | x) \alpha p(x | \theta) p(\theta) \tag{8.20}
+\]
+Instead of estimating the minimum of the negative log-likelihood, we now estimate the minimum of the negative log-posterior, which is referred to as \textit{maximum a posteriori estimation (MAP estimation)}. \\
+\textbf{Example 8.6} (see p.269) \\
+\textbf{Remark}\\
+\begin{itemize}
+	\item In ML, the idea of including prior knowledge about where good parameters lie is widespread.
+	\item The maximum likelihood estimate $\theta_{ML}$ possesses the following	properties
+	\begin{description}
+		\item[Asymptotic consistency] The MLE converges to the true value in the limit of infinitely many observations, plus a random error that is approximately normal
+		\item[The size of the samples] necessary to achieve these properties can be quite large.
+		\item[The error’s variance] decays in $1/N$ , where $N$ is the number of data points. Especially, in the “small” data regime, maximum likelihood estimation can lead to overfitting.
+	\end{description}
+\end{itemize}
+
+MLE and MPE uses probabilistic modeling to reason about the uncertainty in the data and model parameters.
+
+\subsection{Model Fitting}
+\textbf{Fitting} : mean optimizing/learning model parameters so that they minimize some loss function (e.g, the negative log-likelihood). \\
+\textbf{$M_{\theta}$} : Model class \\
+\textbf{$M^{\text{*}}$} : unknown model \\
+\textbf{Training}: For a given training dataset, we optimize $\theta$ so that $M_{\theta}$ is as close as possible to $M^{\text{*}}$ , where the “closeness” is defined by the objective function we optimize. \\
+After we obtain the best possible parameters $\theta^{\text{*}}$ (optimizations), we distinguish three different cases:
+\begin{description}
+	\item[Overfitting : ] refers to the situation where the parametrized model class is too rich to model the dataset generated by $M^{\text{*}}$ , i.e., $M_{\theta}$ could model much more complicated datasets. One way to detect overfitting in practice is to
+	observe that the model has low training risk but high test risk during cross validation.
+	\item[Underfitting : ] we encounter the opposite problem where the model class $M_{\theta}$ is not rich enough. Models that underfit typically have few parameters.
+	\item[Fitting well : ] when the parametrized model class is about right, i.e., it neither overfits nor underfits.
+\end{description}
+
+\subsection{Further reading}
+see p.272
+
+\section{Probabilistic Modeling and Inference}
+ML: interpretation and analysis of data $\Rightarrow$ models that describe the \textit{generative process} that generates the observed data.
+
+\subsection{Probabilistic Models}
+From tje observed variables $x$ and the hidden parameters $\theta$, a probabilistic model is specified by the joint distribution $p(x, \theta)$ of all random variables. It represent the uncertain aspects of an experiment as probability distributions. \\
+$\Rightarrow$ set of tools from probability theory (Chapter 6) for modeling, inference, prediction, and model selection. \\
+Encapsulate information from : 
+\begin{itemize}
+	\item The prior and the likelihood
+	\item The marginal likelihood $p(x)$
+	\item The posterior
+\end{itemize}
+
+\subsection{Bayesian Inference}
+The predictive distribution will be $p(x|\theta^{\ast})$ where we use $\theta_\ast$ in the likelihood function.  \\
+Bayesian inference is about learning the distribution of random variables, thus it is about finding the posterior distribution.\\
+For a dataset $\mathcal{X}$, a parameter prior $p(\theta)$, and a likelihood function, the posterior 
+\[
+p(\theta | \mathcal{X}) = \frac{p(\mathcal{X} | \theta) p(\theta)}{p(\mathcal{X})}, p(\mathcal{X}) = \int p(\mathcal{X} | \theta) p(\theta) d\theta, \tag{8.22}
+\]
+is obtained by applying Bayes' theorem. Bayesian inference inverts the relationship between parameters $\theta$ and the data $\mathcal{X}$ to obtain the posterior distribution $p(\theta | \mathcal{X})$.\\
+With a distribution $p(\theta)$ on the parameters, our predictions will be 
+\[
+p(x) = \int p(x|\theta) p(\theta) d\theta = \mathbb{E} [p(x|\theta)], \tag{8.23}
+\]
+
+$\Rightarrow$ The prediction is an average over all plausible parameter value $\theta$, where the plausibility is encapsulated by the parameter distribution $p(\theta)$ \\
+See p.274 for comparison between parameter estimation(optimization problem) and Bayesian inference(integral problem). \\
+\textbf{Remark}: In the machine learning literature, there can be a somewhat arbitrary separation between (random) “variables” and “parameters”. While parameters are estimated (e.g., via maximum likelihood), variables are usually marginalized out.
+
+\subsection{Latent-Variable Models}
+$z$: \textit{Latent variables} (besides the model parameters $\theta$). It may describe the data-generating process, thereby contributing to the interpretability of the model. They also often simplify the structure of the model and allow us to define simpler and richer model structure. \\
+$\Rightarrow$ We often use Expectation maximization algorithm. \\ 
+$x$ as data, $\theta$ as the model parameters, $z$ as the latent variables, we obtain the conditional distribution 
+\[
+p(x|z,\theta) \tag{8.24}
+\]
+that allows us to generate data for any model parameters and latent variables. \\
+\textbf{Two-step procedure to facilitate learning:}
+\begin{enumerate}
+	\item Compute the likelihood $p(x|\theta)$ of the model
+	\item Use this likelihood for parameter estimation or Bayesian inference
+\end{enumerate}
+To marginalize out the latent variables:
+\[
+p(x|\theta) = \int p(x|z, \theta) p(z) dz, \tag{8.25}
+\]
+where $p(x|z, \theta)$ is given in (8.24) and $p(z)$ is the prior on the latent variables.\\
+The posterior distribution 
+\[
+p(\theta | \mathcal{X}) = \frac{p(\mathcal{X} | \theta) p(\theta)}{p(\mathcal{X})}) \tag{8.26} 
+\]
+over the model parameters given a dataset $\mathcal{X}$.\\
+Posterior on the latent variables according to
+\[
+p(z|\mathcal{X}) = \frac{p(\mathcal{X} | z) p(z)}{p(\mathcal{X})}, \; \; p(\mathcal{X} | z) = \int p(\mathcal{X} | z, \theta) p(\theta) d\theta \tag{8.27}
+\]
+where $p(z)$ is the prior on the latent variables and $p(\mathcal{X} | z)$ requires us to
+integrate out the model parameters $\theta$ . \\
+The posterior distribution on the latent variables, but conditioned on the model parameters, i.e.,
+\[
+p(z|\mathcal{X}, \theta) = \frac{p(\mathcal{X}| z, \theta) p(z)}{p(\mathcal{X} | \theta)}, \tag{8.28}
+\]
+where $p(z)$ is the prior on the latent variables and $p(\mathcal{X} | z, \theta)$ is given
+in (8.24). \\
+\textbf{Remark} (see p.277)
+
+\subsection{Further Reading}
+see p.277\\
+read about \textit{probabilistic programming}
+
+\section{Directed Graphical Models}
