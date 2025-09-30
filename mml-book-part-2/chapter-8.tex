@@ -286,3 +286,124 @@ see p.277\\
 read about \textit{probabilistic programming}
 
 \section{Directed Graphical Models}
+
+A graphical language for specifying a probabilistic model, in order to visually parse dependencies between random variables\\ \\
+Directed graphical models are also known as Bayesian networks. \\ 
+In \textit{graphical model}, nodes are random variables. \\
+\textbf{Remark} Not every distribution can be represented in a particular choice of graphical model. \\
+\textbf{Properties}
+\begin{itemize}
+	\item They are a simple way to visualize the structure of a probabilistic model.
+	\item They can be used to design or motivate new kinds of statistical models.
+	\item Inspection of the graph alone gives us insight into properties, e.g., conditional independence.
+	\item Complex computations for inference and learning in statistical models can be expressed in terms of graphical manipulations.
+\end{itemize}
+\subsection{Graph Semantics}
+\textbf{Directed graphical models/Bayesian networks}: are a method for representing conditional dependencies in a probabilistic model.\\
+Directed \textbf{links} (arrows) between two \textbf{nodes} (random variables) indicate conditional probabilities. \\ 
+Directed graphical models can be derived from joint distributions if we know something about their factorization. \\
+\textbf{Example 8.7} (see p279) \\
+\textbf{Step for creating a directed graphical model from a factorized joint distribution}
+\begin{enumerate}
+	\item Create a node for all random variables.
+	\item For each conditional distribution, we add a directed link (arrow) to the graph from the nodes corresponding to the variables on which the distribution is conditioned.
+\end{enumerate}
+The graph layout depends on the choice of factorization of the joint distribution.
+\textbf{Example 8.8} (see p 280) \\ \\
+In , the joint distribution $p(x) = p(x_1,\dots,x_K)$ is given as 
+\[
+p(x) = \prod_{k=1}^{K} p(x_k| \text{Pa}_k), \tag{8.31}
+\]
+Where $\text{Pa}_k$ means "the parent nodes of $x_k$" \\ \\
+\textbf{Application with a Bernouilli experiment}\\
+probability that the outcome $x$ pf this experiment is "head" is 
+\[
+p(x|\mu) = \text{Ber} (\mu) \tag{8.32}
+\] 
+After $N$ repetition, we get $x_1,\dots,x_N$ outcomes $\Rightarrow$ 
+\[
+p(x_1,\dots,x_N | \mu ) = \prod_{n=1}^{N} p(x_n | \mu) \tag{8.33}
+\]
+To write the graphical model down for this setting, we make the distinction between unobserved/latent variables and observed variables.
+\\ See p. 281 For the graphical model with \textit{Plate} notation. \\
+\textbf{Hyperprior}: a second layer of prior distributions on the parameters of the first layer of priors.
+\subsection{Conditional Independence and d-Separation}
+Consider a general directed graph in which $\mathcal{A}$, $\mathcal{B}$, $\mathcal{C}$ are arbitrary nonintersecting sets of nodes.\\
+We want to verify that the following statement is implied by a given directed acyclic graph:
+\[
+\text{" } \mathcal{A} \text{ is conditionally independent of } \mathcal{B} \text{ given } \mathcal{C} \text{ "} \Leftrightarrow \mathcal{A} \perp\!\perp \mathcal{B} | \mathcal{C} \tag{8.34}
+\]
+To do so, we consider all possible trails (paths that ignore the direction of the arrows) from any node in $\mathcal{A}$ to any nodes in $\mathcal{B}$ . Any such path is said to be blocked if it includes any node such that either of the following are true:
+\begin{itemize}
+	\item The arrows on the path meet either head to tail or tail to tail at the node, and the node is in the set C .
+	\item The arrows meet head to head at the node, and neither the node nor any of its descendants is in the set C .
+\end{itemize}
+If all paths are blocked, then $\mathcal{A}$ is said to be \textit{d-separated} from $\mathcal{B}$ by $\mathcal{C}$ ,and the joint distribution over all of the variables in the graph will satisfy $\mathcal{A} \perp\!\perp \mathcal{B} | \mathcal{C}$. \\ 
+\textbf{Example 8.9 (Conditional Independence)} (see p.282) \\
+\subsection{Furhter Reading} 
+see p.283 \\
+\begin{itemize}
+	\item Bishop, Christopher M. 2006. Pattern Recognition and Machine Learning. Springer.
+	\item Koller, Daphne, and Friedman, Nir. 2009. Probabilistic Graphical Models. MIT Press.
+	\item Herbrich, Ralf, Minka, Tom, and Graepel, Thore. 2007. TrueSkill(TM): A Bayesian Skill Rating System. In: Advances in Neural Information Processing Systems.
+\end{itemize}
+
+\section{Model Selection}
+Model performance is very important from the point of view of testing set. We should consider if we need a complex model to describe the relationship in data or something else, many things influence the decision when we are choosing the right approach of training and when we are choosing the model to train.\\
+\subsection{Nested Cross-Validation}
+For each split, we can perform another round of cross-validation. \\
+The are two level : the inner level and outer level. \\
+\textbf{Test set} : the set used to estimate the generalization performance.\\
+\textbf{Validation set} : the set used for choosing the best model. \\ 
+The inner loop estimates the expected value of the generalization error for a given model
+(8.39), by approximating it using the empirical error on the validation set, i.e., 
+\[
+\mathbb{E}_{\mathcal{V}}[ R(\mathcal{V}|M)] \approx \frac{1}{K} \sum_{k=1}^{K} R(\mathcal{V}^{(k)} | M), \tag{8.36}
+\]
+where $R(\mathcal{V} | M)$ is the empirical risk (e.g., root mean square error) on the
+validation set $\mathcal{V}$ for model $M$. We repeat this procedure for all models and choose the model that performs best. Once the model is chosen, we can evaluate the final performance on the test set.\\
+The standard error is defined as $\frac{\sigma}{\sqrt{K}}$ where $K$ is the number of experiments and $\sigma$ is the standard deviation of the risk of each experiment. \\ 
+\subsection{Bayesian Model Selection}
+To trade off model complexity and data fit. \\
+\textbf{Occam's razor}: find the simplest model that explains the data reasonably well.\\ An “automatic Occam’s Razor” is quantitatively embodied in the application of Bayesian probability, thus, we can use this for model selection instead of doing the process manually. \\
+\textbf{Evidence for }$M_i$: $p(\mathcal{D} | M_i)$\\
+$\Rightarrow$ Hierarchical inference problem. \\
+Consideration :
+\begin{itemize}
+	\item A finite number of models $M = \{ M_1,\dots,M_K\}$
+	\item $M_k$ : model that possesses parameters $\theta_k$
+	\item In Bayesian model selection, we place a prior $p(M)$ on the set of models.
+\end{itemize}
+The \textbf{corresponding generative} process that allows us to generate data from this model is 
+\[
+M_k \sim p(M) \tag{8.40}
+\]
+\[
+\theta_k \sim p(\theta | M_k) \tag{8.41}
+\]
+\[
+\mathcal{D} \sim p(\mathcal{D} | \theta_k) \tag{8.42}
+\]
+The posterior distribution over models
+\[
+p(M_k|\mathcal{D}) \; \alpha \; p(M_k) p(\mathcal{D}|M_k) \tag{8.43}
+\]
+
+\textbf{Model evidence or marginal likelihood}: 
+\[
+p(\mathcal{D}) = \int p(\mathcal{D} | \theta_k) p(\theta_k|M_k) d\theta_k \tag{8.44}
+\]
+where $p(\theta_k|M_k)$ is the prior distribution of the model parameters $\theta_k$ of the model $M_k$. \\
+The MAP estimation:
+\[
+M^{\text{*}} = arg \; \max_{M_k} p(M_k | \mathcal{D}) \tag{8.45}
+\]
+\textbf{Remark} (Difference between Likelihood and Marginal Likelihood): While the likelihood is prone to overfitting, the marginal likelihood is typically not as the model parameters have been marginalized out (i.e., we no longer have to fit the parameters). Furthermore, the marginal likelihood automatically embodies a trade-off between model complexity and data fit (Occam’s razor).
+
+\subsection{Bayes Factors for Model Comparison}
+Comparing two probabilistic models $M_1$ , $M_2$ ,given a dataset $\mathcal{D}$.
+\textbf{Posterior odds}: see (8.46) on page 287. You can see there the definition to \textbf{Prior odds} and \textbf{Bayes factor}.\\
+\textbf{Remark}: \textit{Jeffreys-Lindley paradox}. (see P287 for detail about choosing a model according to Bayes factors)
+	
+\subsection{Further Reading}
+see p288

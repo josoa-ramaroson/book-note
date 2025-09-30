@@ -1,0 +1,42 @@
+chapter{Linear Regression}
+Find a function that maps inputs $x \in \mathbb{R}^D$ to corresopnding function values $f(x) \in \mathbb{R}$. \\ 
+We assume zero-mean Gaussian noise.\\
+\textbf{Requiered problem to be solved when finding a regression function:}
+\begin{itemize}
+	\item Choice of the model (type) and the parametrization of the regression function
+	\item Finding good parameters
+	\item Overfitting and model selection
+	\item Relationship between loss functions and parameter priors
+	\item Uncertainty modeling
+\end{itemize}
+
+\section{Problem Formulation}
+Model the noise using a likelihood function:
+\[
+p(y|x) = \mathcal{N}(y|f(x), \sigma^2) \tag{9.1}
+\]
+Here, $x \in \mathbb{R}^D$ are inputs and $y \in \mathbb{R}$ are noisy function values (targets). \\
+The relationship between $x$ and $y$ :
+\[
+y = f(x) + \upsilon \tag{9.2} 
+\]
+Where $\upsilon \sim \mathcal{N}(0, \sigma^2)$ is independent, identically distributed (i.i.d)  Gaussian measurement noise with mean 0 and variance $\sigma^2$.\\
+\textbf{Objective :} to find a function that is close (similar) to the unknown function $f$ that generated the data and that generalizes well. \\
+\textbf{Parametric models} (parameters $\theta$): $\sigma^2$ as the noise variance, we will focus on learning the model parameters $\theta$.\\
+$\theta$ appear linearly in our model like:
+\[
+p(y|x, \theta) = \mathcal{N}(y|x^T  \theta, \sigma^2) \tag{9.3}
+\]
+\[
+\Leftrightarrow y = x^T \theta + \epsilon, \; \; \epsilon \sim \mathcal{N} (0, \sigma^2) \tag{9.4}
+\]
+Where $\theta \in \mathbb{R}^D$ the parameters we seek.\\
+The likelihood in (9.3) is the probability density function of $y$ evaluated at $x^{T} \theta$.\\ \\ 
+A Dirac delta (delta function) is zero everywhere except at a single point, and its integral is $1$. It can be considered a Gaussian in the limit of $\sigma^2 \rightarrow 0$ likelihood
+\textbf{Example 9.1} see p.291\\ \\
+Linear regression refers to models that are linear in the parameters. \\
+Linear regression model $\Rightarrow$ linear input $x$.\\
+For non linear input $\Rightarrow$ $y = \Phi^{T}(x) \theta$ where $\Phi$ is also linear regression model.\\
+From here, we assume that the noise variance $\sigma^2$ is known.
+
+\section{Parameter Estimation}
