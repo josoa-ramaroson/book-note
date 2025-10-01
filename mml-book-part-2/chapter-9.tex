@@ -15,7 +15,7 @@ Model the noise using a likelihood function:
 \[
 p(y|x) = \mathcal{N}(y|f(x), \sigma^2) \tag{9.1}
 \]
-Here, $x \in \mathbb{R}^D$ are inputs and $y \in \mathbb{R}$ are noisy function values (targets). \\
+Here, $x \in \mathbb{R}^D$ are inputs and $y \in \mathbb{R}$ are noisy function values targets). \\
 The relationship between $x$ and $y$ :
 \[
 y = f(x) + \upsilon \tag{9.2} 
@@ -39,4 +39,67 @@ Linear regression model $\Rightarrow$ linear input $x$.\\
 For non linear input $\Rightarrow$ $y = \Phi^{T}(x) \theta$ where $\Phi$ is also linear regression model.\\
 From here, we assume that the noise variance $\sigma^2$ is known.
 
-\section{Parameter Estimation}
+\section{Parameter Estimation} (we want to find $\theta^{\ast}$ for the function) \\
+Training set $\mathcal{D} := \{(x_1,y_1),\dots,(x_N,y_N)\}$ \\
+$N$ inputs $x_n \in \mathbb{R}^D$ \\
+Observations/targets $y_n \in \mathbb{R},\; n = 1,\dots,N$. \\
+As $y_i$ and $y_j$ are conditionally independent, we can factorize the likelihood 
+\[
+p(\mathcal{Y} | \mathcal{X}, \theta) = p(y_1,\dots,y_N|x_1,\dots,x_N,\theta) \tag{9.5a}
+\]
+\[
+\; \; \;  = \prod_{n=1}^{N} p(y_n|x_n,\theta) = \prod_{n=1}^{N} \mathcal{N}(y_n|x_n^{T} \theta, \sigma^2) \tag{9.5b}
+\]
+Training set: $\mathcal{X} := \{x_1,\dots,x_n\}$, corresponding targets  $\mathcal{Y} := \{y_1,y_N\}$
+\subsection{Maximum Likelihood Estimation}
+Maximizing the likelihood means maximizing the predictive distribution of the (training) data given the parameters. The likelihood is not a probability distribution in the parameters. \\
+Design matrix \\ \\
+\textbf{Maximum Likelihood Estimation with Features}: Since “linear regression” only refers to “linear in the parameters”, we can perform an arbitrary nonlinear transformation $\Phi(x)$ of the inputs $x$ and then linearly combine the components of this transformation.\\
+$\Phi$ : Feature vector \\ \\
+\textbf{Estimating the Noise Variance $\sigma^2$} : We follow the standard procedure: We write down the log-likelihood, compute its derivative with respect to $\sigma^2 > 0$, set it to $0$,\\
+The maximum likelihood estimate of the noise variance is the empirical mean of the squared distances between the noise-free function values $\Phi^{T}(x_n) \theta$ and the corresponding noisy observations $y_n$ at input locations $x_n$ . \\ \\
+\subsection{Overfitting in Linear Regression}
+We can evaluate the quality of the model by computing the error/loss incurred. $\Rightarrow$ negative log-likelihood. \\ \\ 
+\textbf{root mean square error (RMSE)} p.298 \\
+\subsection{Maximum A Posteriori Estimation}
+see p300-302 \\
+\subsection{MAP Estimation as Regularization}
+see p302-303 \\
+mitigate the effect of overfitting by penalizing the amplitude of the parameter by means of regularization. \\
+Regularized least squares \\ 
+Data-fit term (misfit term) \\
+Regularizer and the regularization parameter $\lambda \ge 0$.\\
+LASSO : least absolution shrinkage and selection operator\\
+\section{Bayesian Linear Regression}
+The full posterior distribution over the parameters is taken into account when making predictions.
+This means we do not fit any parameters, but we compute a mean over all plausible parameters settings (according to the posterior). \\
+\subsection{Model} 
+see p.304
+\subsection{Prior Predicitons}
+In a Bayesian setting, we take the parameter distribution and average over all plausible parameter settings when we make predictions
+P. 304
+\subsection{Posterior Distribution}
+p. 306
+marginal likelihood \\
+Evidence \\
+The marginal  likelihood is the  expected likelihood under the parameter  prior.\\
+\textbf{Theorem 9.1 (Parameter Posterior).} \\
+Completing the squares. \\
+\textit{Remark} (General Approach to Completing the Squares). \\
+\subsection{Posterior Predictions}
+\textit{Remark} (Marginal Likelihood and Posterior Predictive Distribution). \\
+\textit{Remark (Mean and Variance of Noise-Free Function Values).} \\
+\textit{Remark (Distribution over Functions).} \\
+Integrating out parameters induces a distribution over functions. \\
+Mean function \\
+\subsection{Computing the Marginal Likelihood}
+p. 312
+The marginal likelihood can be interpreted as the  expected likelihood under the prior,
+\section{Maximum Likelihood as Orthogonal Projection}
+Geometric interpretation of maximum likelihood estimation. \\
+Linear regression can be thought of as a method for solving systems of linear equations. \\
+Maximum likelihood linear regression performs an orthogonal projection. \\
+\section{Further Reading}
+the category of generalized linear models, a flexible generalization of linear regression that allows for response variables that have error distributions other than a Gaussian distribution. \\
+The function $\sigma()$ is called transfer function or activation function, and its inverse is called the canonical link function. \\
+Gaussian process \\
